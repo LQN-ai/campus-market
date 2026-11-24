@@ -15,3 +15,14 @@ frontend/*.log
 .idea/
 *.iml
 .vscode/
+
+# ===== 文档类（不提交到仓库） =====
+实验报告.docx
+实验报告.md
+项目代码功能说明.docx
+物理架构图.drawio
+SpringBoot实验报告参考模版2026V2.doc
+SpringBoot实验报告参考模版2026V2.docx
+gen-docx.js
+gen-code-doc.js
+~$*.docx
