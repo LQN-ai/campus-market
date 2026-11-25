@@ -57,6 +57,7 @@ public class AuthInterceptor implements HandlerInterceptor {
         }
         String uri = request.getRequestURI();
         return uri.equals("/api/products")
+                || uri.equals("/api/products/recommend")
                 || uri.matches("/api/products/\\d+")
                 || uri.matches("/api/products/\\d+/reviews")
                 || uri.matches("/api/merchants/\\d+/reviews");

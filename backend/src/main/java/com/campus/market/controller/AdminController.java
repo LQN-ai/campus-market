@@ -50,6 +50,18 @@ public class AdminController {
         return Result.success();
     }
 
+    @PostMapping("/users/{id}/ban")
+    public Result<Void> banUser(@PathVariable Long id) {
+        adminService.banUser(id);
+        return Result.success();
+    }
+
+    @PostMapping("/users/{id}/unban")
+    public Result<Void> unbanUser(@PathVariable Long id) {
+        adminService.unbanUser(id);
+        return Result.success();
+    }
+
     @PostMapping("/users/{id}/recharge")
     public Result<Void> recharge(@PathVariable Long id, @RequestBody Map<String, BigDecimal> body) {
         adminService.recharge(id, body.get("amount"));
@@ -82,6 +94,12 @@ public class AdminController {
     @PostMapping("/merchants/{id}/offline")
     public Result<Void> offline(@PathVariable Long id) {
         adminService.offlineMerchant(id);
+        return Result.success();
+    }
+
+    @PostMapping("/merchants/{id}/unoffline")
+    public Result<Void> unoffline(@PathVariable Long id) {
+        adminService.unofflineMerchant(id);
         return Result.success();
     }
 

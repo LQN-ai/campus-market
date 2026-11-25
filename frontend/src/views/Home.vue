@@ -2,6 +2,16 @@
   <div>
     <NavBar />
     <div class="container">
+      <el-carousel v-if="recommendList.length" height="260px" class="carousel" :interval="4000">
+        <el-carousel-item v-for="r in recommendList" :key="r.id" @click="$router.push(`/product/${r.id}`)">
+          <img :src="r.images && r.images[0] ? r.images[0] : placeholder" class="carousel-img" />
+          <div class="carousel-info">
+            <span class="carousel-name">{{ r.name }}</span>
+            <span class="carousel-price">¥{{ r.price }}</span>
+          </div>
+        </el-carousel-item>
+      </el-carousel>
+
       <div class="search-bar">
         <el-input v-model="keyword" placeholder="搜索商品名称" size="large" clearable @keyup.enter="load(1)">
           <template #append>
@@ -57,11 +67,12 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import NavBar from '../components/NavBar.vue'
-import { searchProducts } from '../api'
+import { searchProducts, getRecommendProducts } from '../api'
 
 const keyword = ref('')
 const sortBy = ref('')
 const list = ref([])
+const recommendList = ref([])
 const total = ref(0)
 const page = ref(1)
 const size = ref(12)
@@ -85,7 +96,14 @@ const load = async (p = 1) => {
   }
 }
 
-onMounted(() => load(1))
+const loadRecommend = async () => {
+  recommendList.value = await getRecommendProducts()
+}
+
+onMounted(() => {
+  load(1)
+  loadRecommend()
+})
 </script>
 
 <style scoped>
@@ -93,6 +111,37 @@ onMounted(() => load(1))
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
+}
+.carousel {
+  margin-bottom: 20px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.carousel-img {
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
+}
+.carousel-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 12px 20px;
+  background: linear-gradient(transparent, rgba(0,0,0,0.6));
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.carousel-name {
+  font-size: 18px;
+  font-weight: bold;
+}
+.carousel-price {
+  color: #f56c6c;
+  font-size: 20px;
+  font-weight: bold;
 }
 .search-bar {
   display: flex;

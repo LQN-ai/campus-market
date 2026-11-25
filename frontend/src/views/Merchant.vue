@@ -77,6 +77,9 @@
             <el-form-item label="是否议价">
               <el-switch v-model="form.negotiable" :active-value="1" :inactive-value="0" />
             </el-form-item>
+            <el-form-item label="推荐到首页轮播">
+              <el-switch v-model="form.recommend" :active-value="1" :inactive-value="0" />
+            </el-form-item>
             <el-form-item label="使用说明">
               <el-input v-model="form.description" type="textarea" :rows="3" />
             </el-form-item>
@@ -136,7 +139,7 @@ const placeholder = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg
 
 const form = reactive({
   name: '', category: '', originalPrice: 0, price: 0, size: '',
-  conditionLevel: '全新', stock: 1, negotiable: 0, description: '', images: []
+  conditionLevel: '全新', stock: 1, negotiable: 0, recommend: 0, description: '', images: []
 })
 
 const statusLabel = (s) => ({
@@ -171,7 +174,7 @@ const onRemove = (file) => {
 const resetForm = () => {
   Object.assign(form, {
     name: '', category: '', originalPrice: 0, price: 0, size: '',
-    conditionLevel: '全新', stock: 1, negotiable: 0, description: '', images: []
+    conditionLevel: '全新', stock: 1, negotiable: 0, recommend: 0, description: '', images: []
   })
   fileList.value = []
   editingId.value = null
@@ -182,7 +185,7 @@ const edit = (row) => {
   Object.assign(form, {
     name: row.name, category: row.category, originalPrice: Number(row.originalPrice),
     price: Number(row.price), size: row.size, conditionLevel: row.conditionLevel,
-    stock: row.stock, negotiable: row.negotiable, description: row.description,
+    stock: row.stock, negotiable: row.negotiable, recommend: row.recommend, description: row.description,
     images: [...(row.images || [])]
   })
   fileList.value = (row.images || []).map((u, i) => ({ name: `img${i}`, url: u }))

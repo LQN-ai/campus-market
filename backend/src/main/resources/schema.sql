@@ -60,6 +60,7 @@ CREATE TABLE IF NOT EXISTS `products` (
     `stock`          INT            NOT NULL DEFAULT 1 COMMENT '库存数量',
     `condition_level` VARCHAR(20)   DEFAULT NULL COMMENT '新旧程度 全新/九成新/八成新等',
     `status`         VARCHAR(20)    NOT NULL DEFAULT 'PENDING' COMMENT '状态 PENDING待审核/PUBLISHED在售/OFFLINE下架/LOCKED锁定/SOLD售出',
+    `recommend`      TINYINT        NOT NULL DEFAULT 0 COMMENT '是否推荐到首页轮播 0否 1是',
     `sales`          INT            NOT NULL DEFAULT 0 COMMENT '销量',
     `rating`         DECIMAL(3,2)   NOT NULL DEFAULT 5.00 COMMENT '好评率',
     `created_at`     DATETIME       NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',

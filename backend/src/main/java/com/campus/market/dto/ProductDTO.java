@@ -32,6 +32,9 @@ public class ProductDTO {
 
     private String conditionLevel;
 
+    /** 是否推荐到首页轮播 0否 1是 */
+    private Integer recommend;
+
     /** 商品图片 URL 列表 */
     private List<String> images;
 }

@@ -23,7 +23,7 @@
           </el-table-column>
           <el-table-column label="数量" width="180">
             <template #default="{ row }">
-              <el-input-number v-model="row.quantity" :min="1" :max="row.stock" size="small" @change="changeQty(row)" />
+              <el-input-number v-model="row.quantity" :min="1" :max="Math.max(row.stock, 1)" size="small" @change="changeQty(row)" />
             </template>
           </el-table-column>
           <el-table-column label="小计" width="120">

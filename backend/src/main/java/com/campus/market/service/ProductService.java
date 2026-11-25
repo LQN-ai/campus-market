@@ -144,6 +144,27 @@ public class ProductService {
         return result;
     }
 
+    /**
+     * 首页轮播图：推荐且在售的商品
+     */
+    public List<ProductVO> listRecommend() {
+        List<Product> products = productMapper.selectList(
+                new LambdaQueryWrapper<Product>()
+                        .eq(Product::getRecommend, 1)
+                        .eq(Product::getStatus, "PUBLISHED")
+                        .orderByDesc(Product::getCreatedAt));
+        List<ProductVO> list = new ArrayList<>();
+        for (Product p : products) {
+            ProductVO vo = BeanUtil.copyProperties(p, ProductVO.class);
+            vo.setImages(queryImages(p.getId()));
+            MerchantProfile mp = merchantProfileMapper.selectOne(
+                    new LambdaQueryWrapper<MerchantProfile>().eq(MerchantProfile::getUserId, p.getMerchantId()));
+            vo.setShopName(mp == null ? null : mp.getShopName());
+            list.add(vo);
+        }
+        return list;
+    }
+
     private void copyDto(ProductDTO dto, Product p) {
         p.setName(dto.getName());
         p.setCategory(dto.getCategory());
@@ -154,6 +175,7 @@ public class ProductService {
         p.setNegotiable(dto.getNegotiable() == null ? 0 : dto.getNegotiable());
         p.setStock(dto.getStock());
         p.setConditionLevel(dto.getConditionLevel());
+        p.setRecommend(dto.getRecommend() == null ? 0 : dto.getRecommend());
     }
 
     private void saveImages(Long productId, List<String> images) {

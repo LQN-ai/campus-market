@@ -318,6 +318,10 @@ public class OrderService {
             User buyer = userMapper.selectById(order.getUserId());
             vo.setBuyerName(buyer == null ? null : buyer.getRealName());
             vo.setBuyerRating(buyer == null ? null : buyer.getRating());
+            Long black = blacklistMapper.selectCount(new LambdaQueryWrapper<Blacklist>()
+                    .eq(Blacklist::getUserId, order.getUserId())
+                    .eq(Blacklist::getMerchantId, order.getMerchantId()));
+            vo.setBuyerBlacklisted(black > 0);
 
             List<OrderItem> items = orderItemMapper.selectList(
                     new LambdaQueryWrapper<OrderItem>().eq(OrderItem::getOrderId, order.getId()));

@@ -9,12 +9,15 @@ export const getMe = () => request.get('/api/auth/me')
 
 // ===== 商品 =====
 export const searchProducts = (params) => request.get('/api/products', { params })
+export const getRecommendProducts = () => request.get('/api/products/recommend')
 export const getProduct = (id) => request.get(`/api/products/${id}`)
 export const createProduct = (data) => request.post('/api/products', data)
 export const updateProduct = (id, data) => request.put(`/api/products/${id}`, data)
 export const offlineProduct = (id) => request.post(`/api/products/${id}/offline`)
 export const myProducts = () => request.get('/api/products/mine')
 export const merchantProfile = () => request.get('/api/merchant/profile')
+export const merchantBlacklist = (buyerId) => request.post('/api/merchant/blacklist', { buyerId })
+export const merchantUnblacklist = (buyerId) => request.post('/api/merchant/unblacklist', { buyerId })
 
 // ===== 购物车 =====
 export const getCart = () => request.get('/api/cart')
@@ -63,6 +66,8 @@ export const adminUsers = (params) => request.get('/api/admin/users', { params }
 export const auditUser = (id, approve) => request.post(`/api/admin/users/${id}/audit`, { approve })
 export const updateUser = (id, data) => request.put(`/api/admin/users/${id}`, data)
 export const deleteUser = (id) => request.delete(`/api/admin/users/${id}`)
+export const banUser = (id) => request.post(`/api/admin/users/${id}/ban`)
+export const unbanUser = (id) => request.post(`/api/admin/users/${id}/unban`)
 export const adminRecharge = (id, amount) => request.post(`/api/admin/users/${id}/recharge`, { amount })
 export const adminMerchants = () => request.get('/api/admin/merchants')
 export const auditMerchant = (id, approve) => request.post(`/api/admin/merchants/${id}/audit`, { approve })
@@ -70,5 +75,6 @@ export const setMerchantLevel = (id, level) => request.put(`/api/admin/merchants
 export const banMerchant = (id, days) => request.post(`/api/admin/merchants/${id}/ban`, { days })
 export const unbanMerchant = (id) => request.post(`/api/admin/merchants/${id}/unban`)
 export const offlineMerchant = (id) => request.post(`/api/admin/merchants/${id}/offline`)
+export const unofflineMerchant = (id) => request.post(`/api/admin/merchants/${id}/unoffline`)
 export const adminProducts = (params) => request.get('/api/admin/products', { params })
 export const auditProduct = (id, approve) => request.post(`/api/admin/products/${id}/audit`, { approve })

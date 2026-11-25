@@ -30,6 +30,11 @@ public class ProductController {
         return Result.success(productService.search(keyword, category, sortBy, page, size));
     }
 
+    @GetMapping("/recommend")
+    public Result<List<ProductVO>> recommend() {
+        return Result.success(productService.listRecommend());
+    }
+
     @GetMapping("/{id}")
     public Result<ProductVO> detail(@PathVariable Long id) {
         return Result.success(productService.detail(id));

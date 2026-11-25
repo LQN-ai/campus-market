@@ -12,6 +12,7 @@ public class OrderVO {
     private String shopName;
     private String buyerName;
     private BigDecimal buyerRating;
+    private Boolean buyerBlacklisted;
     private List<Item> items;
 
     @Data

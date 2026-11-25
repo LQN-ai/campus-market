@@ -6,10 +6,12 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.campus.market.common.BusinessException;
+import com.campus.market.entity.Blacklist;
 import com.campus.market.entity.MerchantProfile;
 import com.campus.market.entity.Product;
 import com.campus.market.entity.User;
 import com.campus.market.entity.Wallet;
+import com.campus.market.mapper.BlacklistMapper;
 import com.campus.market.mapper.MerchantProfileMapper;
 import com.campus.market.mapper.ProductMapper;
 import com.campus.market.mapper.UserMapper;
@@ -34,6 +36,7 @@ public class AdminService {
     private final MerchantProfileMapper merchantProfileMapper;
     private final ProductMapper productMapper;
     private final WalletMapper walletMapper;
+    private final BlacklistMapper blacklistMapper;
     private final WalletService walletService;
 
     public IPage<User> listUsers(int page, int size, String role, Integer status) {
@@ -183,8 +186,42 @@ public class AdminService {
                 .set(Product::getStatus, "OFFLINE"));
     }
 
+    /**
+     * 解除下架（恢复店铺正常营业）
+     */
+    public void unofflineMerchant(Long userId) {
+        MerchantProfile p = getProfile(userId);
+        p.setShopStatus(0);
+        merchantProfileMapper.updateById(p);
+    }
+
     public void recharge(Long userId, BigDecimal amount) {
         walletService.recharge(userId, amount);
+    }
+
+    /**
+     * 平台拉黑买家（merchant_id 为 NULL 表示全平台拉黑）
+     */
+    public void banUser(Long userId) {
+        Long exist = blacklistMapper.selectCount(new LambdaQueryWrapper<Blacklist>()
+                .eq(Blacklist::getUserId, userId)
+                .isNull(Blacklist::getMerchantId));
+        if (exist > 0) {
+            return;
+        }
+        Blacklist b = new Blacklist();
+        b.setUserId(userId);
+        b.setMerchantId(null);
+        blacklistMapper.insert(b);
+    }
+
+    /**
+     * 解除平台拉黑
+     */
+    public void unbanUser(Long userId) {
+        blacklistMapper.delete(new LambdaQueryWrapper<Blacklist>()
+                .eq(Blacklist::getUserId, userId)
+                .isNull(Blacklist::getMerchantId));
     }
 
     private MerchantProfile getProfile(Long userId) {

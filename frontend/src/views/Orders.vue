@@ -68,6 +68,8 @@
                     <el-button type="danger" size="small" @click="audit(o.order.id, false)">拒绝退货</el-button>
                   </template>
                   <el-button v-if="['CONFIRMED', 'AUTO_CONFIRMED', 'RETURNED'].includes(o.order.status)" size="small" @click="openBuyerReview(o)">评价买家</el-button>
+                  <el-button v-if="!o.buyerBlacklisted && ['CONFIRMED', 'AUTO_CONFIRMED', 'RETURNED'].includes(o.order.status)" link type="danger" size="small" @click="blacklistBuyer(o)">拉黑买家</el-button>
+                  <el-button v-if="o.buyerBlacklisted" link type="info" size="small" @click="unblacklistBuyer(o)">解除拉黑</el-button>
                 </div>
               </div>
             </el-card>
@@ -89,9 +91,9 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import NavBar from '../components/NavBar.vue'
-import { myOrders, merchantOrders, confirmOrder, requestReturn, auditReturn, reviewProduct, reviewMerchant, reviewBuyer } from '../api'
+import { myOrders, merchantOrders, confirmOrder, requestReturn, auditReturn, reviewProduct, reviewMerchant, reviewBuyer, merchantBlacklist, merchantUnblacklist } from '../api'
 import { useAuthStore } from '../store/auth'
 
 const auth = useAuthStore()
@@ -146,6 +148,19 @@ const doReturn = async (id) => {
 const audit = async (id, approve) => {
   await auditReturn(id, approve)
   ElMessage.success(approve ? '已同意退货' : '已拒绝退货')
+  load()
+}
+
+const blacklistBuyer = async (order) => {
+  await ElMessageBox.confirm(`确认拉黑买家「${order.buyerName || '未知'}」？拉黑后该买家将无法购买你的商品。`, '提示', { type: 'warning' })
+  await merchantBlacklist(order.order.userId)
+  ElMessage.success('已拉黑该买家')
+  load()
+}
+
+const unblacklistBuyer = async (order) => {
+  await merchantUnblacklist(order.order.userId)
+  ElMessage.success('已解除拉黑')
   load()
 }
 

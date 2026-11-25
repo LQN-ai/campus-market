@@ -26,6 +26,8 @@
                 </template>
                 <el-button link type="primary" @click="openRecharge(row)">充值</el-button>
                 <el-button link type="primary" @click="openEditUser(row)">修改</el-button>
+                <el-button v-if="row.role === 'USER'" link type="warning" @click="banBuyer(row)">拉黑</el-button>
+                <el-button v-if="row.role === 'USER'" link type="info" @click="unbanBuyer(row)">解除拉黑</el-button>
                 <el-button link type="danger" @click="removeUser(row)">删除</el-button>
               </template>
             </el-table-column>
@@ -38,6 +40,9 @@
             <el-table-column prop="username" label="用户名" width="120" />
             <el-table-column prop="realName" label="姓名" width="100" />
             <el-table-column prop="level" label="等级" width="70" />
+            <el-table-column label="好评率" width="90">
+              <template #default="{ row }">{{ row.rating ?? '暂无' }}</template>
+            </el-table-column>
             <el-table-column prop="totalSales" label="累计交易额" width="110" />
             <el-table-column label="营业执照" width="90">
               <template #default="{ row }">
@@ -71,7 +76,8 @@
                 </template>
                 <template v-else>
                   <el-button link type="warning" @click="ban(row)">封禁</el-button>
-                  <el-button link type="danger" @click="offline(row)">下架店铺</el-button>
+                  <el-button v-if="row.shopStatus === 1" link type="success" @click="unoffline(row)">解除下架</el-button>
+                  <el-button v-else link type="danger" @click="offline(row)">下架店铺</el-button>
                 </template>
               </template>
             </el-table-column>
@@ -143,6 +149,19 @@
       </template>
     </el-dialog>
 
+    <el-dialog v-model="banDialog" title="封禁商家" width="360px">
+      <div style="display: flex; align-items: center; gap: 12px">
+        <span>封禁时长：</span>
+        <el-input-number v-model="banDays" :min="1" :max="365" />
+        <span>天</span>
+      </div>
+      <p style="color: #999; font-size: 13px; margin-top: 8px">封禁期间该商家无法发布新商品</p>
+      <template #footer>
+        <el-button @click="banDialog = false">取消</el-button>
+        <el-button type="primary" @click="submitBan">确定封禁</el-button>
+      </template>
+    </el-dialog>
+
     <el-dialog v-model="previewVisible" title="查看图片" width="600px" append-to-body>
       <div style="text-align: center">
         <img :src="previewUrl" style="max-width: 100%; max-height: 70vh" />
@@ -159,8 +178,8 @@ import { ref, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import NavBar from '../components/NavBar.vue'
 import {
-  adminUsers, auditUser as apiAuditUser, updateUser, deleteUser, adminRecharge, adminMerchants,
-  auditMerchant as apiAuditMerchant, setMerchantLevel, banMerchant, unbanMerchant, offlineMerchant,
+  adminUsers, auditUser as apiAuditUser, updateUser, deleteUser, banUser, unbanUser, adminRecharge, adminMerchants,
+  auditMerchant as apiAuditMerchant, setMerchantLevel, banMerchant, unbanMerchant, offlineMerchant, unofflineMerchant,
   adminProducts, auditProduct as apiAuditProduct
 } from '../api'
 
@@ -180,6 +199,10 @@ const editUserForm = ref({ realName: '', phone: '', email: '', city: '', gender:
 const levelDialog = ref(false)
 const levelVal = ref(1)
 const levelTarget = ref(null)
+
+const banDialog = ref(false)
+const banTarget = ref(null)
+const banDays = ref(1)
 
 const previewVisible = ref(false)
 const previewUrl = ref('')
@@ -257,6 +280,19 @@ const removeUser = async (row) => {
   load()
 }
 
+const banBuyer = async (row) => {
+  await ElMessageBox.confirm(`确认拉黑买家「${row.username}」？拉黑后该用户将无法在平台购买任何商品。`, '提示', { type: 'warning' })
+  await banUser(row.id)
+  ElMessage.success('已拉黑')
+  load()
+}
+
+const unbanBuyer = async (row) => {
+  await unbanUser(row.id)
+  ElMessage.success('已解除拉黑')
+  load()
+}
+
 const openLevel = (row) => {
   levelTarget.value = row
   levelVal.value = row.level
@@ -270,10 +306,16 @@ const submitLevel = async () => {
   load()
 }
 
-const ban = async (row) => {
-  await ElMessageBox.confirm('确认封禁该商家1天（封禁期间禁止发布新商品）？', '提示', { type: 'warning' })
-  await banMerchant(row.userId, 1)
-  ElMessage.success('已封禁1天')
+const ban = (row) => {
+  banTarget.value = row
+  banDays.value = 1
+  banDialog.value = true
+}
+
+const submitBan = async () => {
+  await banMerchant(banTarget.value.userId, banDays.value)
+  ElMessage.success(`已封禁${banDays.value}天`)
+  banDialog.value = false
   load()
 }
 
@@ -287,6 +329,12 @@ const offline = async (row) => {
   await ElMessageBox.confirm('确认下架该店铺全部商品？', '提示', { type: 'warning' })
   await offlineMerchant(row.userId)
   ElMessage.success('店铺已下架')
+  load()
+}
+
+const unoffline = async (row) => {
+  await unofflineMerchant(row.userId)
+  ElMessage.success('已解除下架')
   load()
 }
 

@@ -24,6 +24,7 @@ public class Product {
     private Integer stock;
     private String conditionLevel;
     private String status;
+    private Integer recommend;
     private Integer sales;
     private BigDecimal rating;
     private LocalDateTime createdAt;
