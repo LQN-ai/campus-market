@@ -18,7 +18,6 @@
               <el-radio-button label="PENDING">待审核</el-radio-button>
               <el-radio-button label="PUBLISHED">在售</el-radio-button>
               <el-radio-button label="LOCKED">已售罄</el-radio-button>
-              <el-radio-button label="SOLD">已出售</el-radio-button>
               <el-radio-button label="OFFLINE">已下架</el-radio-button>
             </el-radio-group>
           </div>
