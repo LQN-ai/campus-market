@@ -33,6 +33,7 @@ public class OrderService {
     private final CartItemMapper cartItemMapper;
     private final MerchantProfileMapper merchantProfileMapper;
     private final BlacklistMapper blacklistMapper;
+    private final UserMapper userMapper;
     private final WalletService walletService;
 
     /**
@@ -82,7 +83,7 @@ public class OrderService {
 
         List<Order> created = new ArrayList<>();
         for (Map.Entry<Long, List<OrderItemInput>> entry : grouped.entrySet()) {
-            created.add(createSingleOrder(userId, entry.getKey(), entry.getValue()));
+            created.add(createSingleOrder(userId, entry.getKey(), entry.getValue(), dto.getTradeTime(), dto.getTradeLocation()));
         }
         // 购物车下单成功后移除对应项
         if (dto.getCartItemIds() != null && !dto.getCartItemIds().isEmpty()) {
@@ -91,7 +92,7 @@ public class OrderService {
         return created;
     }
 
-    private Order createSingleOrder(Long userId, Long merchantId, List<OrderItemInput> inputs) {
+    private Order createSingleOrder(Long userId, Long merchantId, List<OrderItemInput> inputs, String tradeTime, String tradeLocation) {
         // 拉黑校验（可选功能）
         Long black = blacklistMapper.selectCount(new LambdaQueryWrapper<Blacklist>()
                 .eq(Blacklist::getUserId, userId)
@@ -143,6 +144,8 @@ public class OrderService {
         order.setMerchantId(merchantId);
         order.setTotalAmount(total);
         order.setStatus("PENDING");
+        order.setTradeTime(tradeTime);
+        order.setTradeLocation(tradeLocation);
         orderMapper.insert(order);
 
         for (OrderItem oi : items) {
@@ -312,6 +315,9 @@ public class OrderService {
             MerchantProfile profile = merchantProfileMapper.selectOne(
                     new LambdaQueryWrapper<MerchantProfile>().eq(MerchantProfile::getUserId, order.getMerchantId()));
             vo.setShopName(profile == null ? null : profile.getShopName());
+            User buyer = userMapper.selectById(order.getUserId());
+            vo.setBuyerName(buyer == null ? null : buyer.getRealName());
+            vo.setBuyerRating(buyer == null ? null : buyer.getRating());
 
             List<OrderItem> items = orderItemMapper.selectList(
                     new LambdaQueryWrapper<OrderItem>().eq(OrderItem::getOrderId, order.getId()));

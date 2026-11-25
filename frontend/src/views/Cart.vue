@@ -43,6 +43,21 @@
       </template>
     </div>
   </div>
+
+  <el-dialog v-model="tradeDialog" title="约定线下交易时间和地点" width="420px" append-to-body>
+    <el-form label-width="80px">
+      <el-form-item label="交易时间">
+        <el-input v-model="tradeForm.tradeTime" placeholder="如：12月3日下午2点" />
+      </el-form-item>
+      <el-form-item label="交易地点">
+        <el-input v-model="tradeForm.tradeLocation" placeholder="如：图书馆门口" />
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <el-button @click="tradeDialog = false">取消</el-button>
+      <el-button type="primary" @click="confirmCheckout">确定下单</el-button>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup>
@@ -55,6 +70,8 @@ import { getCart, updateCart, deleteCart, createOrder } from '../api'
 const router = useRouter()
 const items = ref([])
 const selected = ref([])
+const tradeDialog = ref(false)
+const tradeForm = ref({ tradeTime: '', tradeLocation: '' })
 const placeholder = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="60" height="60"%3E%3Crect width="60" height="60" fill="%23eee"/%3E%3C/svg%3E'
 
 const load = async () => {
@@ -80,8 +97,14 @@ const checkout = async () => {
     ElMessage.warning('请选择要结算的商品')
     return
   }
-  await createOrder({ cartItemIds: selected.value.map(i => i.cartItemId) })
+  tradeForm.value = { tradeTime: '', tradeLocation: '' }
+  tradeDialog.value = true
+}
+
+const confirmCheckout = async () => {
+  await createOrder({ cartItemIds: selected.value.map(i => i.cartItemId), ...tradeForm.value })
   ElMessage.success('下单成功')
+  tradeDialog.value = false
   router.push('/orders')
 }
 

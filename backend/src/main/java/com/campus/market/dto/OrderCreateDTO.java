@@ -15,4 +15,10 @@ public class OrderCreateDTO {
 
     /** 从购物车下单时传多个购物车项ID */
     private List<Long> cartItemIds;
+
+    /** 线下交易时间（约定） */
+    private String tradeTime;
+
+    /** 线下交易地点（约定） */
+    private String tradeLocation;
 }

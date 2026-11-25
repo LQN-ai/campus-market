@@ -18,6 +18,8 @@ public class Order {
     private Long merchantId;
     private BigDecimal totalAmount;
     private String status;
+    private String tradeTime;
+    private String tradeLocation;
     private LocalDateTime createdAt;
     private LocalDateTime confirmedAt;
 }

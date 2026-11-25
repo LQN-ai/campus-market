@@ -12,6 +12,11 @@
           <div class="value">{{ wallet.points }}</div>
           <div class="sub">100积分 = 1元</div>
         </div>
+        <div class="wallet-card">
+          <div class="label">我的好评率</div>
+          <div class="value">{{ user.rating ?? '暂无' }}</div>
+          <div class="sub">由商家评价得出</div>
+        </div>
       </div>
 
       <el-card class="redeem-card">
@@ -45,9 +50,10 @@
 import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import NavBar from '../components/NavBar.vue'
-import { getWallet, walletTransactions, redeemPoints } from '../api'
+import { getWallet, walletTransactions, redeemPoints, getMe } from '../api'
 
 const wallet = ref({ balance: 0, points: 0 })
+const user = ref({})
 const transactions = ref([])
 const redeemPointsVal = ref(100)
 
@@ -69,6 +75,7 @@ const typeTag = (t) => ({
 
 const load = async () => {
   wallet.value = await getWallet()
+  user.value = await getMe()
   transactions.value = await walletTransactions()
 }
 

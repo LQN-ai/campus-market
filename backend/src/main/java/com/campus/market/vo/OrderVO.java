@@ -10,6 +10,8 @@ import java.util.List;
 public class OrderVO {
     private Order order;
     private String shopName;
+    private String buyerName;
+    private BigDecimal buyerRating;
     private List<Item> items;
 
     @Data

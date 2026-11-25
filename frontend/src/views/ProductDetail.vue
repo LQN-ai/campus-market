@@ -56,6 +56,21 @@
       </div>
     </div>
   </div>
+
+  <el-dialog v-model="tradeDialog" title="约定线下交易时间和地点" width="420px" append-to-body>
+    <el-form label-width="80px">
+      <el-form-item label="交易时间">
+        <el-input v-model="tradeForm.tradeTime" placeholder="如：12月3日下午2点" />
+      </el-form-item>
+      <el-form-item label="交易地点">
+        <el-input v-model="tradeForm.tradeLocation" placeholder="如：图书馆门口" />
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <el-button @click="tradeDialog = false">取消</el-button>
+      <el-button type="primary" @click="confirmBuy">确定下单</el-button>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup>
@@ -71,6 +86,8 @@ const router = useRouter()
 const auth = useAuthStore()
 const product = ref(null)
 const reviews = ref([])
+const tradeDialog = ref(false)
+const tradeForm = ref({ tradeTime: '', tradeLocation: '' })
 const placeholder = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="400"%3E%3Crect width="400" height="400" fill="%23eee"/%3E%3C/svg%3E'
 
 const load = async () => {
@@ -94,8 +111,14 @@ const buyNow = async () => {
     router.push('/login')
     return
   }
-  await createOrder({ productId: product.value.id, quantity: 1 })
+  tradeForm.value = { tradeTime: '', tradeLocation: '' }
+  tradeDialog.value = true
+}
+
+const confirmBuy = async () => {
+  await createOrder({ productId: product.value.id, quantity: 1, ...tradeForm.value })
   ElMessage.success('下单成功')
+  tradeDialog.value = false
   router.push('/orders')
 }
 

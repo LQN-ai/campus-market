@@ -100,6 +100,8 @@ CREATE TABLE IF NOT EXISTS `orders` (
     `merchant_id`  BIGINT        NOT NULL COMMENT '商家用户ID',
     `total_amount` DECIMAL(10,2) NOT NULL DEFAULT 0.00 COMMENT '实际支付金额',
     `status`       VARCHAR(20)   NOT NULL DEFAULT 'PENDING' COMMENT '状态 PENDING待收货/CONFIRMED已确认/AUTO_CONFIRMED自动确认/RETURN_REQUESTED退货申请/RETURNED已退货',
+    `trade_time`   VARCHAR(50)   DEFAULT NULL COMMENT '线下交易时间(约定)',
+    `trade_location` VARCHAR(100) DEFAULT NULL COMMENT '线下交易地点(约定)',
     `created_at`   DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '下单时间',
     `confirmed_at` DATETIME      DEFAULT NULL COMMENT '确认收货时间',
     PRIMARY KEY (`id`),

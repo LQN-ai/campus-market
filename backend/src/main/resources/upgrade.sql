@@ -19,3 +19,8 @@ CREATE TABLE IF NOT EXISTS `buyer_reviews` (
     KEY `idx_user` (`user_id`),
     KEY `idx_merchant` (`merchant_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='买家评价表';
+
+-- 订单表新增：线下交易时间、地点
+ALTER TABLE `orders`
+    ADD COLUMN `trade_time` VARCHAR(50) DEFAULT NULL COMMENT '线下交易时间(约定)' AFTER `status`,
+    ADD COLUMN `trade_location` VARCHAR(100) DEFAULT NULL COMMENT '线下交易地点(约定)' AFTER `trade_time`;

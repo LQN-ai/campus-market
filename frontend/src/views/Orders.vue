@@ -21,6 +21,9 @@
                 <span class="shop">{{ o.shopName }}</span>
                 <el-tag>{{ statusLabel(o.order.status) }}</el-tag>
               </div>
+              <div v-if="o.order.tradeTime || o.order.tradeLocation" class="trade-info">
+                线下交易：{{ o.order.tradeTime || '时间待定' }} · {{ o.order.tradeLocation || '地点待定' }}
+              </div>
               <div v-for="it in o.items" :key="it.productId" class="order-item">
                 <img :src="it.image || placeholder" class="thumb" />
                 <span class="pname">{{ it.productName }}</span>
@@ -45,7 +48,12 @@
             <el-card v-for="o in sellerOrders" :key="o.order.id" class="order-card">
               <div class="order-head">
                 <span>订单号：{{ o.order.orderNo }}</span>
+                <span class="shop">买家：{{ o.buyerName || '未知' }}</span>
+                <el-tag type="warning">买家好评率 {{ o.buyerRating ?? '暂无' }}</el-tag>
                 <el-tag>{{ statusLabel(o.order.status) }}</el-tag>
+              </div>
+              <div v-if="o.order.tradeTime || o.order.tradeLocation" class="trade-info">
+                线下交易：{{ o.order.tradeTime || '时间待定' }} · {{ o.order.tradeLocation || '地点待定' }}
               </div>
               <div v-for="it in o.items" :key="it.productId" class="order-item">
                 <img :src="it.image || placeholder" class="thumb" />
@@ -194,6 +202,14 @@ onMounted(load)
 }
 .order-card {
   margin-bottom: 16px;
+}
+.trade-info {
+  background: #fef0f0;
+  color: #e6a23c;
+  font-size: 13px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-top: 10px;
 }
 .order-head {
   display: flex;
